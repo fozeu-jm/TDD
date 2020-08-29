@@ -4,21 +4,26 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Spy;
 
 import static org.mockito.Mockito.*;
 
 public class StockManagementTests {
 	DataService testWebservice;
 	DataService testDBservice;
+	
+	@Spy
 	StockManager manager;
 
 	@Before
 	public void setup() {
 		testWebservice = mock(DataService.class);
 		testDBservice = mock(DataService.class);
-		manager = new StockManager();
+		manager = spy(new StockManager());
 		manager.setWebService(testWebservice);
 		manager.setDBservice(testDBservice);
+		//substitute method with spy from mockito
+		doReturn(4).when(manager).getExternalSubstractor();
 	}
 
 	@Test
@@ -34,7 +39,7 @@ public class StockManagementTests {
 		String isbn = "0140177396";
 		when(testDBservice.lookUp(isbn)).thenReturn(new Book("abc", "abc", isbn));
 		manager.getLocatorCode(isbn);
-		verify(testDBservice, times(1)).lookUp(isbn);
+		verify(testDBservice, times(1)).lookUp(isbn); 
 		verify(testWebservice, never()).lookUp(anyString());
 	}
 
